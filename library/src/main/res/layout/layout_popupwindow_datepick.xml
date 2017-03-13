@@ -7,8 +7,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/shape_view_bg">
-
+        android:background="@drawable/shape_view_bg"
+        >
         <TextView
             android:id="@+id/id_btn_date_ok"
             android:layout_width="wrap_content"
@@ -35,6 +35,7 @@
 
     <DatePicker
         android:id="@+id/id_date_picker"
+        android:background="?android:windowBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:calendarViewShown="false"
