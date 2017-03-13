@@ -53,8 +53,12 @@ public class DateSelectView extends AppCompatTextView implements View.OnClickLis
         }
         this.setGravity(Gravity.CENTER_VERTICAL);
         this.setOnClickListener(this);
-        this.setCompoundDrawablesWithIntrinsicBounds(0,0, R.drawable.ic_expand_more_black_24dp,0);
-        this.setBackgroundResource(R.drawable.selector_classic_text_item_bg);
+        if (this.getCompoundDrawables()[2]==null) {
+            this.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_expand_more_black_24dp, 0);
+        }
+        if (this.getBackground()==null) {
+            this.setBackgroundResource(R.drawable.selector_classic_text_item_bg);
+        }
     }
 
 
