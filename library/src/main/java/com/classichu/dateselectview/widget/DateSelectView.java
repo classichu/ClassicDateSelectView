@@ -27,13 +27,11 @@ public class DateSelectView extends AppCompatTextView implements View.OnClickLis
     public static final String DEFAULT_STR="请选择";
     private static final String TAG = "DateSelectView";
     public DateSelectView(Context context) {
-        super(context);
-        init(context);
+        this(context,null);
     }
 
     public DateSelectView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context,null,0);
     }
 
     public DateSelectView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -51,13 +49,15 @@ public class DateSelectView extends AppCompatTextView implements View.OnClickLis
             int paddingTop_Bottom = SizeTool.dp2px(mContext, 6);
             this.setPadding(paddingLeft_Right, paddingTop_Bottom, paddingLeft_Right, paddingTop_Bottom);
         }
-        this.setGravity(Gravity.CENTER_VERTICAL);
         this.setOnClickListener(this);
         if (this.getCompoundDrawables()[2]==null) {
             this.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_expand_more_black_24dp, 0);
         }
         if (this.getBackground()==null) {
             this.setBackgroundResource(R.drawable.selector_classic_text_item_bg);
+        }
+        if(this.getGravity()==(Gravity.TOP|Gravity.START)){
+            this.setGravity(Gravity.CENTER_VERTICAL);
         }
     }
 
