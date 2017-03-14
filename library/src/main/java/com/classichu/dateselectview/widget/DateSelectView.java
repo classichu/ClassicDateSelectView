@@ -31,7 +31,7 @@ public class DateSelectView extends AppCompatTextView implements View.OnClickLis
     }
 
     public DateSelectView(Context context, AttributeSet attrs) {
-        this(context,null,0);
+        this(context,attrs,0);
     }
 
     public DateSelectView(Context context, AttributeSet attrs, int defStyleAttr) {
