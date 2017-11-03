@@ -2,9 +2,11 @@ package com.classichu.dateselectview.tool;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -19,16 +21,106 @@ public class DateTool {
 
     public static final String DEFAULT_DATA = "1970-01-01";
 
+    public static final String FORMAT_1 = "HH:mm";
+    public static final String FORMAT_2 = "MM-dd";
+    public static final String FORMAT_3 = "MM-dd HH:mm";
+    public static final String FORMAT_4 = "yyyy-MM-dd HH:mm";
+    public static final String FORMAT_5 = "yyyy-MM-dd'T'HH:mm";
+    public static final String FORMAT_6 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String FORMAT_7 = "yyyy-MM-dd'T'HH:mm:ssZ";
+    public static final String FORMAT_8 = "yyyy-MM-dd HH:mm:ss.S";
+    public static final String FORMAT_9 = "yyyy-MM-dd HH:mm:SS";
+
+    // public static final String FORMAT_dot_1 = "HH:mm";
+    public static final String FORMAT_dot_2 = "MM.dd";
+    public static final String FORMAT_dot_3 = "MM.dd HH:mm";
+    public static final String FORMAT_dot_4 = "yyyy.MM.dd HH:mm";
+    public static final String FORMAT_dot_5 = "yyyy.MM.dd'T'HH:mm";
+    public static final String FORMAT_dot_6 = "yyyy.MM.dd'T'HH:mm:ss.SSSZ";
+    public static final String FORMAT_dot_7 = "yyyy.MM.dd'T'HH:mm:ssZ";
+    public static final String FORMAT_dot_8 = "yyyy.MM.dd HH:mm:ss.S";
+    public static final String FORMAT_dot_9 = "yyyy.MM.dd HH:mm:SS";
+
+    // public static final String FORMAT_dot_1 = "HH:mm";
+    public static final String FORMAT_slash_2 = "MM/dd";
+    public static final String FORMAT_slash_3 = "MM/dd HH:mm";
+    public static final String FORMAT_slash_4 = "yyyy/MM/dd HH:mm";
+    public static final String FORMAT_slash_5 = "yyyy/MM/dd'T'HH:mm";
+    public static final String FORMAT_slash_6 = "yyyy/MM/dd'T'HH:mm:ss.SSSZ";
+    public static final String FORMAT_slash_7 = "yyyy/MM/dd'T'HH:mm:ssZ";
+    public static final String FORMAT_slash_8 = "yyyy/MM/dd HH:mm:ss.S";
+    public static final String FORMAT_slash_9 = "yyyy/MM/dd HH:mm:SS";
+
+    // public static final String FORMAT_dot_1 = "HH:mm";
+    public static final String FORMAT_cn_2 = "MM月dd日";
+    public static final String FORMAT_cn_3 = "MM月dd日 HH:mm";
+    public static final String FORMAT_cn_4 = "yyyy年MM月dd日 HH:mm";
+    public static final String FORMAT_cn_5 = "yyyy年MM月dd日'T'HH:mm";
+    public static final String FORMAT_cn_6 = "yyyy年MM月dd日'T'HH:mm:ss.SSSZ";
+    public static final String FORMAT_cn_7 = "yyyy年MM月dd日'T'HH:mm:ssZ";
+    public static final String FORMAT_cn_8 = "yyyy年MM月dd日 HH:mm:ss.S";
+    public static final String FORMAT_cn_9 = "yyyy年MM月dd日 HH:mm:SS";
+
+
+    private static List<SimpleDateFormat> formats = new ArrayList<>();
+
+    static {
+        formats.add(new SimpleDateFormat(FORMAT_1, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_2, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_3, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_4, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_5, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_6, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_7, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_8, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_9, Locale.CHINA));
+        //
+        formats.add(new SimpleDateFormat(FORMAT_dot_2, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_3, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_4, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_5, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_6, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_7, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_8, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_dot_9, Locale.CHINA));
+        //
+        formats.add(new SimpleDateFormat(FORMAT_slash_2, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_3, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_4, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_5, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_6, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_7, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_8, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_slash_9, Locale.CHINA));
+        //
+        formats.add(new SimpleDateFormat(FORMAT_cn_2, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_3, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_4, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_5, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_6, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_7, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_8, Locale.CHINA));
+        formats.add(new SimpleDateFormat(FORMAT_cn_9, Locale.CHINA));
+    }
+
+
     public static String getNextDayDateTime() {
-        Calendar calendar=Calendar.getInstance();
-        calendar.add(Calendar.DATE,1);//加1天  -1减一天  和Calendar.DAY_OF_MONTH值一样
-        return parseCalendar2Str(calendar,FORMAT_DATE_TIME);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);//加1天  -1减一天  和Calendar.DAY_OF_MONTH值一样
+        return parseCalendar2Str(calendar, FORMAT_DATE_TIME);
     }
+
     public static String getNextDayDate() {
-        Calendar calendar=Calendar.getInstance();
-        calendar.add(Calendar.DATE,1);//加1天  -1减一天  和Calendar.DAY_OF_MONTH值一样
-        return parseCalendar2Str(calendar,FORMAT_DATE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);//加1天  -1减一天  和Calendar.DAY_OF_MONTH值一样
+        return parseCalendar2Str(calendar, FORMAT_DATE);
     }
+
+    public static String parseTimeInMillis2Str(long timeInMillis, String formatStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat(formatStr, Locale.CHINA);
+        return sdf.format(timeInMillis);
+    }
+
     /**
      * 取当前China日期
      *
@@ -37,6 +129,7 @@ public class DateTool {
     public static String getChinaDate() {
         return parseDate2Str(new Date(), FORMAT_DATE);//取当前时间
     }
+
     /**
      * 取当前China日期时间
      *
@@ -79,10 +172,10 @@ public class DateTool {
      * @param dayOfMonth
      * @return
      */
-    public static String getChinaDateTimeFromCalendar(int year, int monthOfYear, int dayOfMonth) {
+    public static String getChinaDateTimeFromCalendar(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minute, int second) {
         SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_TIME, Locale.CHINA);//Locale.SIMPLIFIED_CHINESE和Locale.CHINA一样
         //new Data(int,int,int)过时了
-        GregorianCalendar calendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);//初始具有指定年月日的公历类对象。
+        GregorianCalendar calendar = new GregorianCalendar(year, monthOfYear, dayOfMonth, hourOfDay, minute, second);//初始具有指定年月日的公历类对象。
         Long timeInMillis = calendar.getTimeInMillis();
         return sdf.format(timeInMillis);//new Data()//取当前时间
     }
@@ -187,19 +280,35 @@ public class DateTool {
     }
 
     public static long timeCompare(String anotherTimeStr) {
-        return timeCompare(getChinaDateTime(),anotherTimeStr);
+        return timeCompare(getChinaDateTime(), anotherTimeStr);
+    }
+
+    public static Date getDateFromAll(String dateStr) {
+        Date date = null;
+        for (SimpleDateFormat format :
+                formats) {
+            try {
+                date = format.parse(dateStr);
+            } catch (ParseException e) {
+                continue;
+            }
+        }
+        return date;
+    }
+
+    public static long getBetween(String time) {
+
+        Date date = getDateFromAll(time);
+        if (null == date) {
+            date = new Date();
+        }
+        return date.getTime() - System.currentTimeMillis();
     }
 
     public static long timeCompare(String oneTimeStr, String anotherTimeStr) {
-        long diffTime = 0;
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_TIME, Locale.CHINA);//Locale.SIMPLIFIED_CHINESE和Locale.CHINA一样
-            Date oneTimeDate = sdf.parse(oneTimeStr);
-            Date anotherTimeDate = sdf.parse(anotherTimeStr);
-            diffTime = oneTimeDate.getTime() - anotherTimeDate.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date oneTimeDate = DateTimeTool.parseDateStr2Date(oneTimeStr);
+        Date anotherTimeDate = DateTimeTool.parseDateStr2Date(anotherTimeStr);
+        long diffTime = oneTimeDate.getTime() - anotherTimeDate.getTime();
         return diffTime;
     }
 

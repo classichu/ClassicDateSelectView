@@ -3,15 +3,18 @@ package com.classichu.dateselectview.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
+import android.os.Build;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.classichu.dateselectview.R;
+import com.classichu.dateselectview.tool.DateTimeTool;
 import com.classichu.dateselectview.tool.DateTool;
 
 import java.util.Calendar;
@@ -20,56 +23,61 @@ import java.util.Date;
 /**
  * Created by louisgeek on 2016/6/5.
  */
-public class DateSelectPopupWindow extends PopupWindow {
+public class DateTimeSelectPopupWindow extends PopupWindow {
+    private static final String TAG = "DateSelectPopupWindow";
 
     private View view;
     private Context mContext;
     private TextView id_btn_date_ok;
     private TextView id_btn_date_cancel;
-    private DateSelectPopupWindow dateSelectPopupWindow;
     private DatePicker id_date_picker;
+    private TimePicker id_time_picker;
 
     private int mYear;
     private int mMonthOfYear;
     private int mDayOfMonth;
-    private static final String TAG = "DateSelectPopupWindow";
+    private int mHourOfDay;
+    private int mMinute;
+    private int mSecond;
 
     private String mNowDateTextInner;
     private String mStartDateTextInner;
     private String mEndDateTextInner;
 
-    public DateSelectPopupWindow(Context context, String nowDateTextInner, String startDateTextInner, String endDateTextInner) {
+    public DateTimeSelectPopupWindow(Context context, String nowDateTextInner, String startDateTextInner, String endDateTextInner) {
         super(context);
         mContext = context;
         mNowDateTextInner = nowDateTextInner;
         mStartDateTextInner = startDateTextInner;
         mEndDateTextInner = endDateTextInner;
         initView();
-        dateSelectPopupWindow = this;
     }
 
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = inflater.inflate(R.layout.layout_popupwindow_datepick, null);
+        view = inflater.inflate(R.layout.layout_popupwindow_date_time_pick, null);
 
         id_date_picker = (DatePicker) view.findViewById(R.id.id_date_picker);
+        id_time_picker = (TimePicker) view.findViewById(R.id.id_time_picker);
 
-        initDatePicker();
+        initDateTimePicker();
 
         id_btn_date_ok = (TextView) view.findViewById(R.id.id_btn_date_ok);
         id_btn_date_cancel = (TextView) view.findViewById(R.id.id_btn_date_cancel);
         id_btn_date_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dateSelectPopupWindow.dismiss();
-                mOnDateSelectListener.onDateSelect(mYear, mMonthOfYear, mDayOfMonth);
+                DateTimeSelectPopupWindow.this.dismiss();
+                if (mOnDateSelectListener != null) {
+                    mOnDateSelectListener.onDateSelect(mYear, mMonthOfYear, mDayOfMonth, mHourOfDay, mMinute, mSecond);
+                }
             }
         });
         id_btn_date_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dateSelectPopupWindow.dismiss();
+                DateTimeSelectPopupWindow.this.dismiss();
             }
         });
 
@@ -79,17 +87,20 @@ public class DateSelectPopupWindow extends PopupWindow {
         this.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         //设置PopupWindow弹出窗体的高
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.setOutsideTouchable(true);
         this.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//必须设置  ps:xml bg和这个不冲突
         this.setAnimationStyle(R.style.dateSelectViewAnimation);
-        this.setFocusable(true);//设置后  达到返回按钮先消失popupWindow
+        this.setTouchable(true);
+        this.setFocusable(true);//设置后  返回按钮先消失popupWindow
+        this.update();
     }
 
-    private void initDatePicker() {
-        Calendar calendar;
-        if (mNowDateTextInner != null && !mNowDateTextInner.equals("") && !mNowDateTextInner.equals("null")
-                && !mNowDateTextInner.contains(DateSelectView.DEFAULT_DATA) && !mNowDateTextInner.equals(DateSelectView.DEFAULT_STR)) {
+    private Calendar calendar;
+
+    private void initDateTimePicker() {
+        if (!TextUtils.isEmpty(mNowDateTextInner)) {
             //显示上一次选择数据
-            Date date = DateTool.parseStr2Date(mNowDateTextInner, DateTool.FORMAT_DATE);
+            Date date = DateTimeTool.parseDateStr2Date(mNowDateTextInner);
             calendar = DateTool.parseDate2Calendar(date);
         } else {
             calendar = Calendar.getInstance();//初始化时间
@@ -97,6 +108,8 @@ public class DateSelectPopupWindow extends PopupWindow {
         int year = calendar.get(Calendar.YEAR);
         int monthOfYear = calendar.get(Calendar.MONTH);
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
 
         DatePicker.OnDateChangedListener dcl = new DatePicker.OnDateChangedListener() {
             @Override
@@ -108,34 +121,55 @@ public class DateSelectPopupWindow extends PopupWindow {
         };
         //
         id_date_picker.init(year, monthOfYear, dayOfMonth, dcl);
-        //
-        Log.i(TAG, "initDatePicker: mNowDateTextInner:" + mNowDateTextInner);
-        Log.i(TAG, "initDatePicker: mStartDateTextInner:" + mStartDateTextInner);
-        if (DateTool.timeCompare(mNowDateTextInner, mStartDateTextInner) > 0) {
-            {
-                if (mStartDateTextInner != null && !mStartDateTextInner.equals("")) {
-                    Calendar calendar_s = DateTool.parseStr2Calendar(mStartDateTextInner, DateTool.FORMAT_DATE);
-                    long time_s = calendar_s.getTimeInMillis();
-                    Log.i(TAG, "initDatePicker: time_s:" + time_s);
-                    id_date_picker.setMinDate(time_s);
-                }
+        //设置最小日期
+        if (!TextUtils.isEmpty(mStartDateTextInner)) {
+            if (DateTool.timeCompare(mNowDateTextInner, mStartDateTextInner) > 0) {
+                Date date_s = DateTimeTool.parseDateStr2Date(mStartDateTextInner);
+                Calendar calendar_s = DateTool.parseDate2Calendar(date_s);
+                long time_s = calendar_s.getTimeInMillis();
+                id_date_picker.setMinDate(time_s);
             }
-            Log.i(TAG, "initDatePicker: mEndDateTextInner:" + mEndDateTextInner);
+        }
+        //设置最大日期
+        if (!TextUtils.isEmpty(mEndDateTextInner)) {
             if (DateTool.timeCompare(mNowDateTextInner, mEndDateTextInner) <= 0) {
-                if (mEndDateTextInner != null && !mEndDateTextInner.equals("")) {
-                    Calendar calendar_e = DateTool.parseStr2Calendar(mEndDateTextInner, DateTool.FORMAT_DATE);
-                    long time_e = calendar_e.getTimeInMillis();
-                    Log.i(TAG, "initDatePicker: calendar_e:" + calendar_e);
-                    id_date_picker.setMaxDate(time_e);
-                }
+                Date date_e = DateTimeTool.parseDateStr2Date(mEndDateTextInner);
+                Calendar calendar_e = DateTool.parseDate2Calendar(date_e);
+                long time_e = calendar_e.getTimeInMillis();
+                id_date_picker.setMaxDate(time_e);
             }
+        }
 
+        //设置时间
+        id_time_picker.setIs24HourView(true);
+        id_time_picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener()
+
+        {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                mHourOfDay = hourOfDay;
+                mMinute = minute;
+                mSecond = calendar.get(Calendar.SECOND);
+            }
+        });
+        //
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+
+        {
+            id_time_picker.setHour(hourOfDay);
+            id_time_picker.setMinute(minute);
+        } else
+
+        {
+            id_time_picker.setCurrentHour(hourOfDay);
+            id_time_picker.setCurrentMinute(minute);
         }
     }
 
 
     public interface OnDateSelectListener {
-        void onDateSelect(int year, int monthOfYear, int dayOfMonth);
+        void onDateSelect(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minute, int second);
+
     }
 
     public void setOnDateSelectListener(OnDateSelectListener onDateSelectListener) {
