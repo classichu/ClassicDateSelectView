@@ -2,6 +2,7 @@ package com.classichu.dateselectview.widget;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -77,7 +78,7 @@ public class DateSelectView extends AppCompatTextView {
      * @param showDateText "yyyy-MM-dd"
      */
     public void setupDateText(String showDateText) {
-        setupDateText(showDateText, null, null, "请选择时间");
+        setupDateText(showDateText, null, null, null);
     }
 
 
@@ -92,7 +93,7 @@ public class DateSelectView extends AppCompatTextView {
      * @param showDateText "yyyy-MM-dd"
      */
     public void setupDateText(String showDateText, String startDateText, String endDateText) {
-        setupDateText(showDateText, startDateText, endDateText, null);
+        setupDateText(showDateText, startDateText, endDateText,null);
     }
 
     /**
@@ -109,7 +110,7 @@ public class DateSelectView extends AppCompatTextView {
         this.mStartDateText = startDateText;
         this.mEndDateText = endDateText;
         this.setText(mShowDateText);
-        this.setHint(hint);
+        this.setHint(TextUtils.isEmpty(hint)?"请选择时间":hint);
     }
 
     private void initDate() {

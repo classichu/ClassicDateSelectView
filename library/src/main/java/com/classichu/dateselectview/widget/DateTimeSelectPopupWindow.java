@@ -103,13 +103,14 @@ public class DateTimeSelectPopupWindow extends PopupWindow {
             Date date = DateTimeTool.parseDateStr2Date(mNowDateTextInner);
             calendar = DateTool.parseDate2Calendar(date);
         } else {
-            calendar = Calendar.getInstance();//初始化时间
+//            calendar = Calendar.getInstance();//初始化时间
+            calendar = DateTool.parseStr2Calendar(DateTool.getChinaDateTime(), DateTool.FORMAT_DATE_TIME);
         }
-        int year = calendar.get(Calendar.YEAR);
-        int monthOfYear = calendar.get(Calendar.MONTH);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
+        mYear = calendar.get(Calendar.YEAR);
+        mMonthOfYear = calendar.get(Calendar.MONTH);
+        mDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        mHourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        mMinute = calendar.get(Calendar.MINUTE);
 
         DatePicker.OnDateChangedListener dcl = new DatePicker.OnDateChangedListener() {
             @Override
@@ -120,7 +121,7 @@ public class DateTimeSelectPopupWindow extends PopupWindow {
             }
         };
         //
-        id_date_picker.init(year, monthOfYear, dayOfMonth, dcl);
+        id_date_picker.init(mYear, mMonthOfYear, mDayOfMonth, dcl);
         //设置最小日期
         if (!TextUtils.isEmpty(mStartDateTextInner)) {
             if (DateTool.timeCompare(mNowDateTextInner, mStartDateTextInner) > 0) {
@@ -140,29 +141,36 @@ public class DateTimeSelectPopupWindow extends PopupWindow {
             }
         }
 
-        //设置时间
-        id_time_picker.setIs24HourView(true);
-        id_time_picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener()
+        if (mHourOfDay == 0 && mMinute == 0) {
+            id_time_picker.setVisibility(View.GONE);
+        } else {
+            id_time_picker.setVisibility(View.VISIBLE);
+            //设置时间
+            id_time_picker.setIs24HourView(true);
+            //
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 
-        {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                mHourOfDay = hourOfDay;
-                mMinute = minute;
-                mSecond = calendar.get(Calendar.SECOND);
+            {
+                id_time_picker.setHour(mHourOfDay);
+                id_time_picker.setMinute(mMinute);
+            } else
+
+            {
+                id_time_picker.setCurrentHour(mHourOfDay);
+                id_time_picker.setCurrentMinute(mMinute);
             }
-        });
-        //
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            //第一次setOnTimeChangedListener会回调一次
+            id_time_picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener()
 
-        {
-            id_time_picker.setHour(hourOfDay);
-            id_time_picker.setMinute(minute);
-        } else
+            {
+                @Override
+                public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                    mHourOfDay = hourOfDay;
+                    mMinute = minute;
+                    mSecond = calendar.get(Calendar.SECOND);
+                }
+            });
 
-        {
-            id_time_picker.setCurrentHour(hourOfDay);
-            id_time_picker.setCurrentMinute(minute);
         }
     }
 
